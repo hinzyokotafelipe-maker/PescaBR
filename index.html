@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PescaBR - Guia Nacional de Pesca Esportiva</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                            900: '#0f172a',
+                        },
+                        amberGold: '#f59e0b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-50 bg-brand-900 text-white shadow-lg border-b border-brand-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="resetFilters()">
+                    <div class="bg-brand-500 p-2.5 rounded-xl text-white shadow-md">
+                        <i class="fa-solid font-bold fa-fish-fins text-2xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-extrabold tracking-tight text-white block leading-none">Pesca<span class="text-amber-400">BR</span></span>
+                        <span class="text-xs text-brand-100 tracking-wider uppercase font-medium">Guia do Pescador</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="hidden md:flex space-x-1 bg-brand-800/60 p-1.5 rounded-xl border border-brand-700/50">
+                    <button onclick="switchTab('destinos')" id="tab-destinos" class="tab-btn px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 bg-brand-500 text-white shadow-sm">
+                        <i class="fa-solid fa-compass mr-2"></i>Destinos & Pousadas
+                    </button>
+                    <button onclick="switchTab('peixes')" id="tab-peixes" class="tab-btn px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 text-brand-100 hover:text-white hover:bg-brand-700/50">
+                        <i class="fa-solid fa-fish mr-2"></i>Guia de Peixes
+                    </button>
+                    <button onclick="switchTab('equipamentos')" id="tab-equipamentos" class="tab-btn px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 text-brand-100 hover:text-white hover:bg-brand-700/50">
+                        <i class="fa-solid fa-gears mr-2"></i>Equipamentos Ideal
+                    </button>
+                </nav>
+
+                <!-- Action Button -->
+                <div class="hidden lg:flex items-center">
+                    <button onclick="openModal('planTripModal')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-md transition duration-200 flex items-center text-sm">
+                        <i class="fa-solid fa-calculator mr-2"></i>Simular Pescaria
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-300 hover:text-white p-2">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-800 border-t border-brand-700 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('destinos'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-brand-700">
+                <i class="fa-solid fa-compass mr-2"></i>Destinos & Pousadas
+            </button>
+            <button onclick="switchTab('peixes'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-brand-100 hover:bg-brand-700">
+                <i class="fa-solid fa-fish mr-2"></i>Guia de Peixes
+            </button>
+            <button onclick="switchTab('equipamentos'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-brand-100 hover:bg-brand-700">
+                <i class="fa-solid fa-gears mr-2"></i>Equipamentos Recomendados
+            </button>
+            <button onclick="openModal('planTripModal'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-md text-base font-bold text-slate-900 bg-amber-400 mt-2">
+                <i class="fa-solid fa-calculator mr-2"></i>Simular Orçamento de Pescaria
+            </button>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative bg-brand-900 text-white overflow-hidden py-12 md:py-16 shadow-inner">
+        <div class="absolute inset-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1600&auto=format&fit=crop');"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-brand-900 via-brand-900/90 to-transparent"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-3xl">
+                <span class="inline-block bg-brand-500/30 border border-brand-400/30 text-amber-300 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
+                    <i class="fa-solid fa-location-dot mr-1.5"></i>O Maior Portal de Pesca Esportiva do Brasil
+                </span>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight text-white mb-4">
+                    Encontre os Melhores Pontos de Pesca, Pousadas e Truques
+                </h1>
+                <p class="text-slate-300 text-base sm:text-lg mb-6 leading-relaxed">
+                    Descubra para onde ir, quanto custa a diária das pousadas, quais peixes você vai fisgar e o equipamento ideal para garantir a captura do seu troféu.
+                </p>
+
+                <!-- BARRA DE BUSCA RÁPIDA -->
+                <div class="bg-white/10 p-2 sm:p-3 rounded-2xl backdrop-blur-md border border-white/20 shadow-2xl flex flex-col sm:flex-row gap-2">
+                    <div class="relative flex-grow">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-input" onkeyup="filterDestinations()" placeholder="Buscar por rio, pousada, estado ou peixe (ex: Tucunaré, Pantanal, Barcelos)..." 
+                            class="w-full pl-10 pr-4 py-3 bg-white text-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder-slate-400 text-sm">
+                    </div>
+                    <select id="region-filter" onchange="filterDestinations()" class="bg-white text-slate-800 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm font-medium">
+                        <option value="">Todas as Regiões</option>
+                        <option value="Norte">Norte (Amazônia)</option>
+                        <option value="Centro-Oeste">Centro-Oeste (Pantanal/Araguaia)</option>
+                        <option value="Sudeste">Sudeste (Tietê/Paraná)</option>
+                        <option value="Sul">Sul (Bacia do Prata)</option>
+                        <option value="Nordeste">Nordeste (Litoral/São Francisco)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- TAB 1: DESTINOS E POUSADAS -->
+        <section id="content-destinos" class="space-y-8">
+            
+            <!-- Quick Category Filter Chips -->
+            <div class="flex items-center justify-between flex-wrap gap-4 border-b border-slate-200 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Pontos de Pesca & Pousadas Especializadas</h2>
+                    <p class="text-sm text-slate-500">Exibindo locais com estrutura completa para recepcionar pescadores</p>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 text-xs font-semibold" id="type-chips">
+                    <button onclick="filterType('todos')" class="type-chip active-chip px-3 py-1.5 rounded-full bg-brand-600 text-white shadow-sm">Todos</button>
+                    <button onclick="filterType('Água Doce')" class="type-chip px-3 py-1.5 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300">Rios & Lagos (Água Doce)</button>
+                    <button onclick="filterType('Oceânica')" class="type-chip px-3 py-1.5 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300">Mar & Costeira</button>
+                    <button onclick="filterType('Pesqueiro')" class="type-chip px-3 py-1.5 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300">Pesqueiros & Pesque-Pague</button>
+                </div>
+            </div>
+
+            <!-- Destinations Grid Container -->
+            <div id="destinations-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamic Content via JavaScript -->
+            </div>
+
+        </section>
+
+        <!-- TAB 2: GUIA DE PEIXES -->
+        <section id="content-peixes" class="hidden space-y-8">
+            <div class="border-b border-slate-200 pb-4">
+                <h2 class="text-2xl font-bold text-slate-800">Guia Completo das Principais Espécies do Brasil</h2>
+                <p class="text-sm text-slate-500">Conheça o comportamento, habitat e iscas preferidas das principais espécies esportivas</p>
+            </div>
+
+            <div id="fish-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Dynamic Fish Content via JS -->
+            </div>
+        </section>
+
+        <!-- TAB 3: GUIA DE EQUIPAMENTOS -->
+        <section id="content-equipamentos" class="hidden space-y-8">
+            <div class="border-b border-slate-200 pb-4">
+                <h2 class="text-2xl font-bold text-slate-800">Equipamentos Recomendados por Categoria</h2>
+                <p class="text-sm text-slate-500">Monte seu tralha ideal para não passar sufoco na hora da fisgada</p>
+            </div>
+
+            <!-- Equipment Selection Categories -->
+            <div id="equip-categories" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Dynamic Equipment Cards -->
+            </div>
+
+            <!-- General Fishing Tips Banner -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-sm">
+                <div class="p-4 bg-amber-500 text-slate-900 rounded-2xl text-3xl font-black shrink-0">
+                    <i class="fa-solid fa-lightbulb"></i>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold text-slate-900 mb-1">Dica de Ouro para Todo Pescador</h4>
+                    <p class="text-slate-700 text-sm leading-relaxed">
+                        Sempre verifique a **Licença de Pesca Amadora Ativa** (IBAMA ou órgão estadual) antes de viajar. Lembre-se também de praticar o **Pesque e Solte** (pesca esportiva) para manter o estoque populacional dos rios vivos para os próximos anos!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brand-900 text-slate-400 text-sm border-t border-brand-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 text-white font-bold text-xl mb-3">
+                        <i class="fa-solid fa-fish-fins text-amber-400"></i>
+                        <span>PescaBR</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Plataforma interativa para pescadores esportivos encontrarem destinos, pousadas com preços transparentes, equipamentos certos e guia de espécies brasileiras.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-3">Principais Regiões de Pesca</h4>
+                    <ul class="space-y-1.5 text-xs">
+                        <li><a href="#" onclick="filterByRegionQuick('Norte')" class="hover:text-amber-400 transition">Rio Negro & Barcelos (AM)</a></li>
+                        <li><a href="#" onclick="filterByRegionQuick('Centro-Oeste')" class="hover:text-amber-400 transition">Pantanal Mato-Grossense (MT/MS)</a></li>
+                        <li><a href="#" onclick="filterByRegionQuick('Centro-Oeste')" class="hover:text-amber-400 transition">Rio Araguaia (GO/TO)</a></li>
+                        <li><a href="#" onclick="filterByRegionQuick('Sudeste')" class="hover:text-amber-400 transition">Rio Paraná & Presidente Epitácio (SP)</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-3">Preservação Ambiental</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                        Respeite os períodos de **Douracena / Piracema**. Utilize anzóis sem fisga para facilitar o desengate e preserve a mata ciliar dos nossos rios.
+                    </p>
+                    <span class="text-xs text-amber-400 font-semibold"><i class="fa-solid fa-leaf mr-1"></i> Pesque, Fotografe e Solte!</span>
+                </div>
+            </div>
+            <div class="border-t border-brand-800 pt-6 text-center text-xs text-slate-500">
+                &copy; <span id="year"></span> PescaBR - Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL DETALHES DA POUSADA / PONTO DE PESCA -->
+    <div id="detailsModal" class="fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative custom-scrollbar">
+            <button onclick="closeModal('detailsModal')" class="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full p-2 transition w-9 h-9 flex items-center justify-center z-10">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div id="modal-content">
+                <!-- Conteúdo Dinâmico inserido via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SIMULADOR / ORÇAMENTO -->
+    <div id="planTripModal" class="fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button onclick="closeModal('planTripModal')" class="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full p-2 transition w-9 h-9 flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <i class="fa-solid fa-calculator text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Simulador de Orçamento</h3>
+                    <p class="text-xs text-slate-500">Calcule uma estimativa média para sua pescaria</p>
+                </div>
+            </div>
+
+            <form id="calc-form" onsubmit="calculateTripCost(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Destino Desejado</label>
+                    <select id="calc-destination" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <!-- Preenchido via JS -->
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Dias de Pesca</label>
+                        <input type="number" id="calc-days" min="1" max="15" value="3" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Pescadores no Barco</label>
+                        <select id="calc-anglers" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            <option value="1">1 Pescador Solo</option>
+                            <option value="2" selected>2 Pescadores (Dupla)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Serviços Adicionais</label>
+                    <div class="space-y-2 text-xs font-medium text-slate-700">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="calc-guide" checked class="rounded text-brand-600 focus:ring-brand-500">
+                            <span>Guia de Pesca / Piloteiro Local (+ Gasolina do Barco)</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="calc-gear" class="rounded text-brand-600 focus:ring-brand-500">
+                            <span>Aluguel de Equipamentos / Iscas Vivas</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition text-sm shadow-md">
+                    Calcular Estimativa
+                </button>
+            </form>
+
+            <div id="calc-result" class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hidden">
+                <div class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Custo Total Estimado:</div>
+                <div class="text-2xl font-black text-brand-700" id="calc-total-val">R$ 0,00</div>
+                <div class="text-xs text-slate-600 mt-1" id="calc-per-person">R$ 0,00 por pessoa</div>
+                <p class="text-[10px] text-slate-400 mt-2">*Valores médios calculados com base nas diárias informadas pelas pousadas, barco, guia e alimentação padrão.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // DATA BASE: DESTINOS E POUSADAS
+        const destinations = [
+            {
+                id: "barcelos-am",
+                name: "Barcelos - Rio Negro",
+                region: "Norte",
+                state: "AM",
+                type: "Água Doce",
+                image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=800&auto=format&fit=crop",
+                badge: "Mundial do Tucunaré-Açú",
+                priceAvg: 1800, // Diária média por pessoa com tudo incluso
+                priceRange: "R$ 1.500 - R$ 2.500 / dia",
+                rating: "4.9",
+                reviewsCount: 128,
+                pousadaExample: "Pousada Eco-Barcelos & Barco Hotel Rio Negro",
+                mainFishes: ["Tucunaré-Açú", "Pirarara", "Piraíba", "Aruanã"],
+                bestMonths: "Setembro a Fevereiro (Mata Seca / Rio Baixo)",
+                recommendedGear: "Iscas de Superfície (Hélice 14cm), Varas 25-30lbs de Ação Rápida, Carretilha com Linha Multifilamento 50-65lbs.",
+                description: "O templo sagrado da pesca esportiva mundial. Conhecido por abrigar os gigantes Tucunarés-Açú que ultrapassam os 80cm e 10kg."
+            },
+            {
+                id: "pantanal-corumba",
+                name: "Pantanal - Corumbá / Rio Paraguai",
+                region: "Centro-Oeste",
+                state: "MS",
+                type: "Água Doce",
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop",
+                badge: "Diversidade de Couro e Escama",
+                priceAvg: 850,
+                priceRange: "R$ 700 - R$ 1.200 / dia",
+                rating: "4.8",
+                reviewsCount: 94,
+                pousadaExample: "Pousada Pantaneira & Barco Hotel Pesca-Pantanal",
+                mainFishes: ["Dourado", "Pintado", "Pacu", "Cachara"],
+                bestMonths: "Março a Outubro (Fora do Período de Defeso/Piracema)",
+                recommendedGear: "Varas de 30-50lbs para peixes de couro (Pintado/Jaú) e Varas de 17-25lbs para Dourado e Pacu.",
+                description: "Um dos ecossistemas mais ricos do planeta. A pesca de fundo para peixes de couro gigantes e o arremesso para o Rei do Rio (Dourado) são inesquecíveis."
+            },
+            {
+                id: "araguaia-luis-alves",
+                name: "Luíz Alves - Rio Araguaia",
+                region: "Centro-Oeste",
+                state: "GO",
+                type: "Água Doce",
+                image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=800&auto=format&fit=crop",
+                badge: "Paraíso dos Peixes de Couro",
+                priceAvg: 750,
+                priceRange: "R$ 600 - R$ 1.000 / dia",
+                rating: "4.7",
+                reviewsCount: 86,
+                pousadaExample: "Pousada das Piraíbas & Canoeiros do Araguaia",
+                mainFishes: ["Piraíba", "Pirarara", "Tucunaré Azul", "Bargre Aruanã"],
+                bestMonths: "Junho a Outubro (Temporada de Praias e Água Limpa)",
+                recommendedGear: "Equipamento Pesadíssimo! Varas de 80-120lbs, Carretilhas com 0.80mm monofilamento ou 80lbs multifilamento para segurar as Piraíbas.",
+                description: "Famoso pelas praias de areia branca e por abrigar a lendária Piraíba (o tubarão de água doce) e as batalhas com a Pirarara."
+            },
+            {
+                id: "epitacio-sp",
+                name: "Presidente Epitácio - Rio Paraná",
+                region: "Sudeste",
+                state: "SP",
+                type: "Água Doce",
+                image: "https://images.unsplash.com/photo-1476514525535-ce74f4581a8b?q=80&w=800&auto=format&fit=crop",
+                badge: "Capital do Tucunaré Azul",
+                priceAvg: 550,
+                priceRange: "R$ 450 - R$ 800 / dia",
+                rating: "4.8",
+                reviewsCount: 110,
+                pousadaExample: "Pousada Cururu & Marina Epitácio",
+                mainFishes: ["Tucunaré Azul", "Tucunaré Amarelo", "Corvina"],
+                bestMonths: "Setembro a Maio",
+                recommendedGear: "Varas leve/média de 12 a 17lbs, iscas de meia-água (7 a 9cm) e plugs de superfície como zaras e poppers.",
+                description: "Excelente infraestrutura a poucas horas da capital paulista. Águas cristalinas do Lago da Usina Sérgio Motta para pescar Tucunarés Azuis espetaculares."
+            },
+            {
+                id: "cananeia-sp",
+                name: "Cananéia & Barra do Ararapira",
+                region: "Sudeste",
+                state: "SP",
+                type: "Oceânica",
+                image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop",
+                badge: "Pesca de Mangue e Costeira",
+                priceAvg: 600,
+                priceRange: "R$ 500 - R$ 900 / dia",
+                rating: "4.6",
+                reviewsCount: 64,
+                pousadaExample: "Pousada Marlin Cananéia",
+                mainFishes: ["Robalo Flecha", "Robalo Peva", "Pescada Amarela", "Sargo"],
+                bestMonths: "Maio a Setembro (Águas limpas para Robalo)",
+                recommendedGear: "Varas de 10-16lbs ação rápida, Jig Heads de 7g a 15g com camarão acoplado de silicone/soft bait.",
+                description: "Um estuário preservado perfeito para a pesca técnica com iscas artificiais finas em busca do troféu: o Robalo Flecha."
+            },
+            {
+                id: "pesqueiro-maeda",
+                name: "Pesqueiro Maeda - Itu",
+                region: "Sudeste",
+                state: "SP",
+                type: "Pesqueiro",
+                image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800&auto=format&fit=crop",
+                badge: "Gigantes dos Tanques",
+                priceAvg: 120,
+                priceRange: "R$ 90 - R$ 200 / entrada + consumação",
+                rating: "4.7",
+                reviewsCount: 310,
+                pousadaExample: "Pousada e Chalés Maeda",
+                mainFishes: ["Tambacu", "Tambaqui", "Pintado", "Pirarara"],
+                bestMonths: "Novembro a Março (Dias quentes ativam o apetite dos Tambas)",
+                recommendedGear: "Varas de 20-40lbs de 2.40m a 2.70m, Boia Cevadeira com ração de furinho na miçanga e chicote de fluorocarbono.",
+                description: "O mais famoso complexo de pesqueiros de São Paulo. Conhecido pelas pampas de Tambacus e Pirararas gigantes de tanque."
+            }
+        ];
+
+        // DATA BASE: PEIXES
+        const fishes = [
+            {
+                name: "Tucunaré-Açú",
+                scientific: "Cichla temensis",
+                habitat: "Bacia Amazônica (Rios Negro, Branco e afluentes)",
+                weight: "Até 13 kg",
+                behavior: "Extremamente agressivo, territorial e predador visual.",
+                baits: "Iscas de hélice (Superfície), Plugs de meia-água e Jigs de cerda.",
+                icon: "fa-fish"
+            },
+            {
+                name: "Dourado",
+                scientific: "Salminus brasiliensis",
+                habitat: "Bacia do Prata, Pantanal, Rio São Francisco",
+                weight: "Até 25 kg",
+                behavior: "Conhecido como 'Rei do Rio'. Salta incrivelmente fora d'água ao ser fisgado.",
+                baits: "Iscas artificiais de meia água barbela longa, Tuperas, Tuviras e Paulistinhas.",
+                icon: "fa-crown"
+            },
+            {
+                name: "Piraíba",
+                scientific: "Brachyplatystoma filamentosum",
+                habitat: "Rios Araguaia, Amazonas e Solimões",
+                weight: "Mais de 150 kg",
+                behavior: "O maior peixe de couro de água doce do Brasil. Vive nos poços profundos das calhas dos rios.",
+                baits: "Peixes inteiros (Cabeça de Pacu, Cachorra, Mandi) servidos no fundo.",
+                icon: "fa-water"
+            },
+            {
+                name: "Robalo Flecha",
+                scientific: "Centropomus undecimalis",
+                habitat: "Estuários, manguezais e foz de rios litorâneos",
+                weight: "Até 15 kg",
+                behavior: "Muito manhoso e técnico. Exige arremessos precisos rente às estruturas de galhada ou pilares.",
+                baits: "Camarão soft bait em Jig Head, Iscas de meia-água (7-9cm) e Camarão vivo.",
+                icon: "fa-anchor"
+            },
+            {
+                name: "Tambacu / Tambaqui",
+                scientific: "Colossoma macropomum",
+                habitat: "Bacia Amazônica e amplamente introduzido em pesqueiros",
+                weight: "Até 40 kg",
+                behavior: "Briga com muita força no fundo. Alimentação onívora.",
+                baits: "Miçangas na boia cevadeira, massa de pesqueiro, beijinho, coquinho e pão.",
+                icon: "fa-shield-halved"
+            },
+            {
+                name: "Pirarara",
+                scientific: "Phractocephalus hemioliopterus",
+                habitat: "Bacias Amazônica e do Araguaia / Pesqueiros",
+                weight: "Até 50 kg",
+                behavior: "Sua marca registrada é a força bruta irresistível rumo às galhadas do fundo.",
+                baits: "Filé de peixe, sangria, lula, guelra e minhocuçu.",
+                icon: "fa-bolt"
+            }
+        ];
+
+        // DATA BASE: EQUIPAMENTOS
+        const equipmentGuides = [
+            {
+                category: "Pesca Leve / Média (Tucunaré Azul, Robalo, Traíra)",
+                vara: "Vara 12 a 17 lb (5'8\" a 6'0\"), Ação Rápida",
+                carretilha: "Carretilha perfil baixo, perfil leve com fricção suave e recolhimento rápido (7.1:1 ou superior)",
+                linha: "Multifilamento 4 fios de 20 a 30 lb (0.20mm) + Leader Fluorocarbono 0.45mm",
+                iscas: "Plugs de Superfície (Zaras/Poppers 8-10cm), Meia-água e Jigs Soft com Jighead de 10g",
+                icon: "fa-feather"
+            },
+            {
+                category: "Pesca Média / Pesada (Tucunaré-Açú, Dourado, Pacu)",
+                vara: "Vara 25 a 40 lb (5'8\" a 6'6\"), Ação Extra-Rápida / Rápida",
+                carretilha: "Carretilha reforçada com drag (fricção) mínimo de 7kg a 10kg",
+                linha: "Multifilamento 8 fios de 50 a 65 lb + Leader Fluorocarbono de 0.60mm a 0.80mm",
+                iscas: "Iscas de Hélice pesadas (12 a 16cm), Colheres com anzol anti-enrosco e Iscas vivas (Tuvira)",
+                icon: "fa-fire"
+            },
+            {
+                category: "Pesca Pesada de Fundo (Piraíba, Pirarara, Jaú)",
+                vara: "Vara 80 a 120 lb de fibra de vidro sólida ou carbono tubular pesado",
+                carretilha: "Molinete tamanho 8000+ ou Carretilha de Perfil Alto / Manivela Direita reforçada com drag de 15kg+",
+                linha: "Monofilamento 0.70mm a 0.90mm (resistente à abrasão de pedras) ou Multifilamento 80-100lb com leader 1.00mm",
+                iscas: "Anzóis Circle Hook 8/0 a 10/0 com chumbada oliva de 150g a 300g e grandes iscas mortas ou vivas",
+                icon: "fa-dumbbell"
+            }
+        ];
+
+        // APPLICAÇÃO STATE
+        let activeTypeFilter = 'todos';
+
+        // INIT APPLICATION
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDestinations(destinations);
+            renderFishes();
+            renderEquipments();
+            populateCalcDestinations();
+            document.getElementById('year').textContent = new Date().getFullYear();
+        });
+
+        // TABS NAVIGATION LOGIC
+        function switchTab(tabName) {
+            const tabs = ['destinos', 'peixes', 'equipamentos'];
+            tabs.forEach(tab => {
+                const contentEl = document.getElementById(`content-${tab}`);
+                const btnEl = document.getElementById(`tab-${tab}`);
+                
+                if (tab === tabName) {
+                    contentEl.classList.remove('hidden');
+                    btnEl.className = "tab-btn px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 bg-brand-500 text-white shadow-sm";
+                } else {
+                    contentEl.classList.add('hidden');
+                    btnEl.className = "tab-btn px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 text-brand-100 hover:text-white hover:bg-brand-700/50";
+                }
+            });
+        }
+
+        // TOGGLE MOBILE MENU
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+        // RENDER DESTINATIONS CARDS
+        function renderDestinations(data) {
+            const container = document.getElementById('destinations-grid');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400">
+                        <i class="fa-solid fa-water-lower text-4xl mb-3"></i>
+                        <p class="text-lg font-semibold">Nenhum ponto de pesca encontrado com estes filtros.</p>
+                        <button onclick="resetFilters()" class="mt-3 text-brand-600 font-bold hover:underline text-sm">Limpar todos os filtros</button>
+                    </div>
+                `;
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group";
+                
+                card.innerHTML = `
+                    <div class="relative h-48 overflow-hidden bg-slate-100">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=800&auto=format&fit=crop'">
+                        <span class="absolute top-3 left-3 bg-brand-900/80 text-white text-[11px] font-bold px-2.5 py-1 rounded-full backdrop-blur-md uppercase tracking-wider">
+                            ${item.region} - ${item.state}
+                        </span>
+                        <span class="absolute top-3 right-3 bg-amber-400 text-slate-950 font-extrabold text-xs px-2.5 py-1 rounded-full shadow">
+                            <i class="fa-solid fa-star text-slate-900 mr-1"></i>${item.rating}
+                        </span>
+                    </div>
+
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-brand-600 uppercase tracking-wide mb-1">${item.badge}</div>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-brand-600 transition">${item.name}</h3>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">${item.description}</p>
+                            
+                            <!-- Main Fishes Tags -->
+                            <div class="mt-3 flex flex-wrap gap-1">
+                                ${item.mainFishes.map(fish => `<span class="bg-slate-100 text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded-md"><i class="fa-solid fa-fish text-brand-500 mr-1"></i>${fish}</span>`).join('')}
+                            </div>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-slate-400 block font-medium uppercase">Média Diária Pousada</span>
+                                <span class="text-base font-extrabold text-slate-800">R$ ${item.priceAvg} <span class="text-xs text-slate-500 font-normal">/ pessoa</span></span>
+                            </div>
+                            <button onclick="openDestinationDetails('${item.id}')" class="bg-brand-50 hover:bg-brand-100 text-brand-700 p-2.5 rounded-xl transition text-xs font-bold flex items-center">
+                                Ver Detalhes <i class="fa-solid fa-arrow-right ml-1.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // RENDER FISHES CARDS
+        function renderFishes() {
+            const container = document.getElementById('fish-grid');
+            container.innerHTML = '';
+
+            fishes.forEach(fish => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition";
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="p-3 bg-brand-50 text-brand-600 rounded-xl text-xl">
+                            <i class="fa-solid ${fish.icon}"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 leading-snug">${fish.name}</h3>
+                            <p class="text-xs italic text-slate-400">${fish.scientific}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-xs text-slate-600">
+                        <p><strong class="text-slate-800">Habitat:</strong> ${fish.habitat}</p>
+                        <p><strong class="text-slate-800">Porte Máximo:</strong> ${fish.weight}</p>
+                        <p><strong class="text-slate-800">Comportamento:</strong> ${fish.behavior}</p>
+                        <div class="pt-2 border-t border-slate-100">
+                            <strong class="text-brand-700 block mb-1">Iscas Recomendadas:</strong>
+                            <span class="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-1 rounded inline-block text-[11px]">${fish.baits}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // RENDER EQUIPMENT GUIDES
+        function renderEquipments() {
+            const container = document.getElementById('equip-categories');
+            container.innerHTML = '';
+
+            equipmentGuides.forEach(guide => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="p-3 bg-brand-600 text-white rounded-xl text-xl">
+                                <i class="fa-solid ${guide.icon}"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-900 text-base">${guide.category}</h3>
+                        </div>
+
+                        <ul class="space-y-3 text-xs text-slate-600">
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-2.5 mt-0.5"></i>
+                                <div><strong class="text-slate-800 block">Vara Indicada:</strong> ${guide.vara}</div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-compact-disc text-amber-500 mr-2.5 mt-0.5"></i>
+                                <div><strong class="text-slate-800 block">Carretilha / Molinete:</strong> ${guide.carretilha}</div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-lines-leaning text-amber-500 mr-2.5 mt-0.5"></i>
+                                <div><strong class="text-slate-800 block">Linha e Leader:</strong> ${guide.linha}</div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-fish-fins text-amber-500 mr-2.5 mt-0.5"></i>
+                                <div><strong class="text-slate-800 block">Iscas Ideais:</strong> ${guide.iscas}</div>
+                            </li>
+                        </ul>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // FILTER FUNCTIONS
+        function filterDestinations() {
+            const searchValue = document.getElementById('search-input').value.toLowerCase();
+            const regionValue = document.getElementById('region-filter').value;
+
+            const filtered = destinations.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchValue) ||
+                                      item.state.toLowerCase().includes(searchValue) ||
+                                      item.description.toLowerCase().includes(searchValue) ||
+                                      item.mainFishes.some(f => f.toLowerCase().includes(searchValue));
+
+                const matchesRegion = regionValue === "" || item.region === regionValue;
+                const matchesType = activeTypeFilter === 'todos' || item.type === activeTypeFilter;
+
+                return matchesSearch && matchesRegion && matchesType;
+            });
+
+            renderDestinations(filtered);
+        }
+
+        function filterType(type) {
+            activeTypeFilter = type;
+            
+            // Update Chip UI
+            document.querySelectorAll('.type-chip').forEach(btn => {
+                if (btn.innerText.includes(type) || (type === 'todos' && btn.innerText === 'Todos')) {
+                    btn.className = "type-chip active-chip px-3 py-1.5 rounded-full bg-brand-600 text-white shadow-sm font-semibold";
+                } else {
+                    btn.className = "type-chip px-3 py-1.5 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300 font-semibold";
+                }
+            });
+
+            filterDestinations();
+        }
+
+        function filterByRegionQuick(region) {
+            switchTab('destinos');
+            document.getElementById('region-filter').value = region;
+            filterDestinations();
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('region-filter').value = '';
+            activeTypeFilter = 'todos';
+            filterDestinations();
+        }
+
+        // OPEN DESTINATION MODAL DETAILS
+        function openDestinationDetails(id) {
+            const item = destinations.find(d => d.id === id);
+            if (!item) return;
+
+            const modalContent = document.getElementById('modal-content');
+            modalContent.innerHTML = `
+                <div class="relative h-64 overflow-hidden">
+                    <img src="${item.image}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
+                    <div class="absolute bottom-4 left-6 right-6 text-white">
+                        <span class="bg-amber-400 text-slate-950 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">
+                            ${item.badge}
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-black">${item.name}</h2>
+                        <p class="text-slate-300 text-xs"><i class="fa-solid fa-location-dot mr-1"></i>${item.region} - Estado de ${item.state}</p>
+                    </div>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <div>
+                        <h4 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Sobre o Destino</h4>
+                        <p class="text-slate-700 text-sm leading-relaxed">${item.description}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase block">Faixa do Custo Diário</span>
+                            <span class="text-base font-extrabold text-brand-700">${item.priceRange}</span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase block">Melhor Época do Ano</span>
+                            <span class="text-sm font-semibold text-slate-800">${item.bestMonths}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Exemplo de Estrutura / Pousada</h4>
+                        <div class="flex items-center space-x-3 text-slate-800 text-sm font-medium">
+                            <i class="fa-solid fa-hotel text-brand-600 text-lg"></i>
+                            <span>${item.pousadaExample}</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Peixes Abundantes na Região</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${item.mainFishes.map(f => `<span class="bg-brand-50 border border-brand-200 text-brand-800 text-xs font-bold px-3 py-1 rounded-lg"><i class="fa-solid fa-fish mr-1.5 text-brand-500"></i>${f}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                        <h4 class="text-xs font-bold uppercase text-amber-800 tracking-wider mb-1"><i class="fa-solid fa-gears mr-1"></i> Equipamento Recomendado para Este Ponto</h4>
+                        <p class="text-xs text-amber-900 leading-relaxed">${item.recommendedGear}</p>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+                        <button onclick="closeModal('detailsModal'); openModal('planTripModal'); setCalcDestination('${item.id}')" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl transition text-center text-sm">
+                            <i class="fa-solid fa-calculator mr-2"></i>Simular Custo Nesta Pousada
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            openModal('detailsModal');
+        }
+
+        // POPULATE CALCULATOR DESTINATIONS SELECT
+        function populateCalcDestinations() {
+            const select = document.getElementById('calc-destination');
+            select.innerHTML = '';
+            destinations.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.id;
+                opt.textContent = `${item.name} (~R$ ${item.priceAvg}/dia)`;
+                select.appendChild(opt);
+            });
+        }
+
+        function setCalcDestination(id) {
+            document.getElementById('calc-destination').value = id;
+        }
+
+        // CALCULATOR LOGIC
+        function calculateTripCost(e) {
+            e.preventDefault();
+            const destId = document.getElementById('calc-destination').value;
+            const days = parseInt(document.getElementById('calc-days').value) || 1;
+            const anglers = parseInt(document.getElementById('calc-anglers').value) || 1;
+            const hasGuide = document.getElementById('calc-guide').checked;
+            const hasGear = document.getElementById('calc-gear').checked;
+
+            const selectedDest = destinations.find(d => d.id === destId);
+            if (!selectedDest) return;
+
+            // Base daily price per angler from accommodation
+            let baseDaily = selectedDest.priceAvg;
+
+            // Adjustments
+            let guideDaily = hasGuide ? (350 / anglers) : 0; // split boat guide fee
+            let gearDaily = hasGear ? 120 : 0;
+
+            let totalPerPerson = (baseDaily + guideDaily + gearDaily) * days;
+            let grandTotal = totalPerPerson * anglers;
+
+            document.getElementById('calc-total-val').textContent = `R$ ${grandTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('calc-per-person').textContent = `R$ ${totalPerPerson.toLocaleString('pt-BR', {minimumFractionDigits: 2})} por pescador (${days} dia(s))`;
+            
+            document.getElementById('calc-result').classList.remove('hidden');
+        }
+
+        // MODAL HELPERS
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
